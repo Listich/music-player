@@ -7,7 +7,8 @@ import {PLAYLIST} from "./data/playlist.js";
 const AudioPlayer = ({PLAYLIST}) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
-
+    const  [currentIndex, setCurrentIndex] = useState(0)
+    let prevIndex = 0;
 
     useEffect(() => {
         if (audioRef.current) {
@@ -19,13 +20,32 @@ const AudioPlayer = ({PLAYLIST}) => {
         }
     }, [isPlaying]);
 
+    const increment = () => {
+        if (currentIndex < PLAYLIST.length - 1) {
+            setCurrentIndex((prevIndex) => prevIndex + 1);
+        }else {
+            setCurrentIndex(0);
+        }
+    };
+    const decrement = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex((prevIndex) => prevIndex - 1);
+        } else {
+            setCurrentIndex(0);
+        }
+    };
+
+
+
     return (
         <>
-            <audio src={PLAYLIST[0].src} ref={audioRef} />
+            <audio src={PLAYLIST[currentIndex].src} ref={audioRef} />
             <div>
                 <button className="Button_play" onClick={() => setIsPlaying(!isPlaying)}>
                     {isPlaying ? "Pause" : "Play"}
                 </button>
+                <button className="Button_Suivant" onClick={increment}>Suivant</button>
+                <button className="Button_precedent" onClick={decrement}>Précédent</button>
             </div>
         </>
     );
