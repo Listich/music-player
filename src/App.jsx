@@ -8,7 +8,6 @@ const AudioPlayer = ({PLAYLIST}) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
     const  [currentIndex, setCurrentIndex] = useState(0)
-    let prevIndex = 0;
 
     useEffect(() => {
         if (audioRef.current) {
@@ -18,7 +17,7 @@ const AudioPlayer = ({PLAYLIST}) => {
                 audioRef.current.pause();
             }
         }
-    }, [isPlaying]);
+    }, [isPlaying, currentIndex]);
 
     const increment = () => {
         if (currentIndex < PLAYLIST.length - 1) {
@@ -35,11 +34,30 @@ const AudioPlayer = ({PLAYLIST}) => {
         }
     };
 
+    useEffect(() => {
+        const audio = audioRef.current;
 
+        const handleEnded = () => {
+            increment();
+        };
+        if (audio) {
+            audio.addEventListener('ended', handleEnded);
+        }
+        return () => {
+            if (audio) {
+                audio.removeEventListener('ended', handleEnded);
+            }
+        };
+    }, [currentIndex]);
 
     return (
         <>
             <audio src={PLAYLIST[currentIndex].src} ref={audioRef} />
+            <div className="infos">
+                <h2>{PLAYLIST[currentIndex].title}</h2>
+                <p>{PLAYLIST[currentIndex].artist}</p>
+                <img src={PLAYLIST[currentIndex].cover} alt="cover" />
+            </div>
             <div>
                 <button className="Button_play" onClick={() => setIsPlaying(!isPlaying)}>
                     {isPlaying ? "Pause" : "Play"}
